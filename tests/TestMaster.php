@@ -1,6 +1,9 @@
 <?php
 
-abstract class TestMaster extends PHPUnit_Framework_TestCase
+use Feature\TennisGame;
+use PHPUnit\Framework\TestCase;
+
+abstract class TestMaster extends TestCase
 {
     /** @var TennisGame */
     protected $_game = null;
