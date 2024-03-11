@@ -4,10 +4,11 @@ namespace Feature;
 
 class TennisGame1 implements TennisGame
 {
-    private int $m_score1 = 0;
-    private int $m_score2 = 0;
-    private string $player1Name = '';
-    private string $player2Name = '';
+    private int $scorePlayer1 = 0;
+    private int $scorePlayer2 = 0;
+    private string $player1Name;
+    private string $player2Name;
+    private const PLAYER_SCORES = ["Love", "Fifteen", "Thirty", "Forty"];
 
     public function __construct($player1Name, $player2Name)
     {
@@ -17,67 +18,39 @@ class TennisGame1 implements TennisGame
 
     public function wonPoint($playerName): void
     {
-        if ('player1' == $playerName) {
-            $this->m_score1++;
+        if ($this->player1Name == $playerName) {
+            $this->scorePlayer1++;
         } else {
-            $this->m_score2++;
+            $this->scorePlayer2++;
         }
     }
 
     public function getScore(): string
     {
         $score = "";
-        if ($this->m_score1 == $this->m_score2) {
-            switch ($this->m_score1) {
-                case 0:
-                    $score = "Love-All";
-                    break;
-                case 1:
-                    $score = "Fifteen-All";
-                    break;
-                case 2:
-                    $score = "Thirty-All";
-                    break;
-                default:
-                    $score = "Deuce";
-                    break;
-            }
-        } elseif ($this->m_score1 >= 4 || $this->m_score2 >= 4) {
-            $minusResult = $this->m_score1 - $this->m_score2;
-            if ($minusResult == 1) {
-                $score = "Advantage player1";
-            } elseif ($minusResult == -1) {
-                $score = "Advantage player2";
-            } elseif ($minusResult >= 2) {
-                $score = "Win for player1";
-            } else {
-                $score = "Win for player2";
-            }
-        } else {
-            for ($i = 1; $i < 3; $i++) {
-                if ($i == 1) {
-                    $tempScore = $this->m_score1;
-                } else {
-                    $score .= "-";
-                    $tempScore = $this->m_score2;
-                }
-                switch ($tempScore) {
-                    case 0:
-                        $score .= "Love";
-                        break;
-                    case 1:
-                        $score .= "Fifteen";
-                        break;
-                    case 2:
-                        $score .= "Thirty";
-                        break;
-                    case 3:
-                        $score .= "Forty";
-                        break;
-                }
-            }
+        if (($this->scorePlayer1 >= 4 || $this->scorePlayer2 >= 4) || ($this->scorePlayer1 == 3 && $this->scorePlayer2 == 3)) {
+            return $this->getAdvantageOrWinScore($this->scorePlayer1, $this->scorePlayer2);
         }
-        return $score;
+
+        $score = self::PLAYER_SCORES[$this->scorePlayer1];
+        if ($this->scorePlayer1 == $this->scorePlayer2) {
+            return $score . "-All";
+        }
+        return ($score . "-" . self::PLAYER_SCORES[$this->scorePlayer2]);
+    }
+
+    private function getAdvantageOrWinScore($scorePlayer1, $scorePlayer2): string {
+        $scoreDifference = $scorePlayer1 - $scorePlayer2;
+        if ($scoreDifference == 0) {
+            return "Deuce";
+        }
+        if ($scoreDifference == 1 || $scoreDifference == -1) {
+            return "Advantage" . " " . ($scoreDifference == 1 ? $this->player1Name : $this->player2Name);
+        }
+        if ($scoreDifference == 2) {
+            return "Win for" . " " . $this->player1Name;
+        }
+        return "Win for" . " " . $this->player2Name;
     }
 }
 
